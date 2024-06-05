@@ -1,0 +1,33 @@
+# https://github.com/aws/eks-charts/blob/master/stable/aws-load-balancer-controller/values.yaml
+
+%{~ if length(k8s_common_labels) > 0 }
+%{~ for lbl_key, lbl_value in k8s_common_labels }
+additionalLabels:
+  ${lbl_key}: "${lbl_value}"
+%{~ endfor ~}
+%{~ endif ~}
+
+replicaCount: ${replica_count}
+
+clusterName: "${cluster_name}"
+
+serviceAccount:
+  create: false
+  name: "${service_account_name}"
+
+region: "${region}"
+
+vpcId: "${vpc_id}"
+
+enableCertManager: ${enable_cert_manager}
+
+%{~ if set_topology_spread_constraints }
+topologySpreadConstraints:
+  - maxSkew: ${set_topology_spread_constraints_max_skew}
+    topologyKey: "${set_topology_spread_constraints_topology_key}"
+    whenUnsatisfiable: "${set_topology_spread_constraints_when_unsatisfiable}"
+    labelSelector:
+      matchLabels:
+        app.kubernetes.io/name: ${chart_name}
+        app.kubernetes.io/instance: ${release_name}
+%{~ endif ~}
